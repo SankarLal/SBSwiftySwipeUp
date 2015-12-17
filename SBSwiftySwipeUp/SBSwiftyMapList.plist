@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>mapList</key>
+	<array>
+		<dict>
+			<key>title</key>
+			<string>Snow</string>
+			<key>subTitle</key>
+			<string>Snow SubTitle</string>
+			<key>type</key>
+			<string>Snow</string>
+			<key>locationName</key>
+			<string>Snow Location Name</string>
+			<key>latitude</key>
+			<string>53.7709505</string>
+			<key>longitude</key>
+			<string>12.5753569</string>
+		</dict>
+		<dict>
+			<key>title</key>
+			<string>Falls</string>
+			<key>subTitle</key>
+			<string>Falls SubTitle</string>
+			<key>type</key>
+			<string>Falls</string>
+			<key>locationName</key>
+			<string>Falls Location Name</string>
+			<key>latitude</key>
+			<string>53.822817</string>
+			<key>longitude</key>
+			<string>12.7905515</string>
+		</dict>
+	</array>
+</dict>
+</plist>
