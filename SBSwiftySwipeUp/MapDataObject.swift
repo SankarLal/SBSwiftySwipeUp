@@ -5,7 +5,7 @@ import UIKit
 class MapDataObject: NSObject {
 
     var str_Title, str_SubTitle, str_LocationName, str_Lat, str_Lng, str_Type : String!
-    var dictionaryData : NSDictionary!
+    var dictionaryData : [String : String] = [String : String]()
     
    override init()  {
         // perform some initialization here
@@ -20,15 +20,15 @@ class MapDataObject: NSObject {
 
     }
    
-    convenience init(dict : NSDictionary) {
+    convenience init(dict : [String : String]) {
         self.init()
         
-        self.str_Title = dict.valueForKey("title") as! String
-        self.str_SubTitle = dict.valueForKey("subTitle") as! String
-        self.str_LocationName = dict.valueForKey("locationName") as! String
-        self.str_Lat = dict.valueForKey("latitude") as! String
-        self.str_Lng = dict.valueForKey("longitude") as! String
-        self.str_Type = dict.valueForKey("type") as! String
+        self.str_Title = dict["title"]
+        self.str_SubTitle = dict["subTitle"]
+        self.str_LocationName = dict["locationName"]
+        self.str_Lat = dict["latitude"]
+        self.str_Lng = dict["longitude"]
+        self.str_Type = dict["type"]
         self.dictionaryData  = dict 
 
     }

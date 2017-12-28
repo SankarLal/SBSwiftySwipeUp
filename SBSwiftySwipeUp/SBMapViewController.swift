@@ -16,8 +16,8 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
         
         self.title = "SBSwifty Swipe Up"
 
-        let path = NSBundle.mainBundle().pathForResource("SBSwiftyMapList", ofType: "plist")
-        let dict = NSDictionary(contentsOfFile: path!)?.valueForKey("mapList")
+        let path = Bundle.main.path(forResource: "SBSwiftyMapList", ofType: "plist")
+        let dict = NSDictionary(contentsOfFile: path!)?.value(forKey: "mapList")
         dictionaryData = NSArray (array: dict as! [AnyObject])
         
         initializeLocationManager()
@@ -31,12 +31,12 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
     func initializeLocationManager () {
         currentLocationManager = CLLocationManager ()
         currentLocationManager.delegate = self
-        if currentLocationManager.respondsToSelector("requestWhenInUseAuthorization") {
+//        if currentLocationManager.respondsToSelector("requestWhenInUseAuthorization") {
             currentLocationManager.requestWhenInUseAuthorization()
-        }
-        if currentLocationManager.respondsToSelector("requestAlwaysAuthorization") {
+//        }
+//        if currentLocationManager.respondsToSelector("requestAlwaysAuthorization") {
             currentLocationManager.requestAlwaysAuthorization()
-        }
+//        }
         
         currentLocationManager.startUpdatingLocation()
         
@@ -47,7 +47,7 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
         
         mapView = MKMapView (frame: self.view.bounds)
         mapView.delegate = self
-        mapView.mapType = .Standard
+        mapView.mapType = .standard
         mapView.showsUserLocation = true
         self.view.addSubview(mapView)
         
@@ -74,18 +74,18 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
     }
     
     // MARK: Add Annotations OnMap
-    func addAnnotationsOnMap (responseMapDataArray : NSArray) {
+    func addAnnotationsOnMap (_ responseMapDataArray : NSArray) {
         
         let tempArray : NSMutableArray = NSMutableArray ()
         for dict in responseMapDataArray {
-            let mapD : MapDataObject = MapDataObject (dict: dict as! NSDictionary)
-            tempArray.addObject(mapD)
+            let mapD : MapDataObject = MapDataObject (dict: dict as! [String : String])
+            tempArray.add(mapD)
         }
         
         createAnnotations(tempArray)
     }
     
-    func createAnnotations (responseData : NSArray) {
+    func createAnnotations (_ responseData : NSArray) {
         
         for dObject in responseData {
             let row : MapDataObject = dObject as! MapDataObject
@@ -113,55 +113,55 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
         
     }
     
-    func updateSwipeView (theDictionary : NSDictionary) {
+    func updateSwipeView (_ theDictionary : [String : String]) {
         
-        UIView.animateWithDuration(0.5,
+        UIView.animate(withDuration: 0.5,
             animations: { () -> Void in
                 
                 self.swipeUpView.setViewData(self.view,
-                    theData: theDictionary)
+                                             theData: theDictionary)
         })
 
     }
     
     // MARK: ALL DELEGATE FUNCTIONS
     // MARK: Location Manager Delegate Function
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
     }
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         
-        if currentLocationManager.respondsToSelector("requestWhenInUseAuthorization") {
-            UIApplication.sharedApplication().sendAction("requestWhenInUseAuthorization",
-                to: currentLocationManager,
-                from: self,
-                forEvent: nil)
+//        if currentLocationManager.respondsToSelector("requestWhenInUseAuthorization") {
+        UIApplication.shared.sendAction(#selector(CLLocationManager.requestWhenInUseAuthorization),
+                                                   to: currentLocationManager,
+                                                   from: self,
+                                                   for: nil)
             
-        }
+//        }
         currentLocationManager.startUpdatingLocation()
     }
     
     // MARK: MapView Delegate Function
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
         if (annotation is MKUserLocation) {
             //if annotation is not an MKPointAnnotation (eg. MKUserLocation),
             //return nil so map draws default view for it (eg. blue dot)...
             return nil
         }
-        if annotation.isKindOfClass(SBMapViewAnnotation.self)  {
+        if annotation.isKind(of: SBMapViewAnnotation.self)  {
             let reuseId = "test"
             let temp  = annotation as! SBMapViewAnnotation
-            var anView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+            var anView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
             if anView == nil {
                 anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
                 
                 let anImage : UIImage = getAnnotationImage(temp.title!)
                 
-                anView?.image = UIImage (CGImage: anImage.CGImage!,
-                    scale: anImage.scale * 1.3,
-                    orientation: anImage.imageOrientation)
+                anView?.image = UIImage.init(cgImage: anImage.cgImage!,
+                                             scale: anImage.scale * 1.3,
+                                             orientation: anImage.imageOrientation)
                 anView!.canShowCallout = false
             }
             else {
@@ -176,21 +176,21 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
         
     }
     
-    func getAnnotationImage (locationName : String) -> UIImage {
+    func getAnnotationImage (_ locationName : String) -> UIImage {
         return UIImage (named: locationName+"Annotation")!
         
     }
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         
-        if view.annotation!.isKindOfClass(SBMapViewAnnotation.self)  {
+        if view.annotation!.isKind(of: SBMapViewAnnotation.self)  {
             
             let temp  = view.annotation as! SBMapViewAnnotation
             
-            let anImage : UIImage = UIImage (CGImage: view.image!.CGImage!,
-                scale: view.image!.scale / 1.3,
-                orientation: view.image!.imageOrientation)
-            
-            UIView.animateWithDuration(0.5,
+            let anImage : UIImage = UIImage.init(cgImage: view.image!.cgImage!,
+                                         scale: view.image!.scale / 1.3,
+                                         orientation: view.image!.imageOrientation)
+
+            UIView.animate(withDuration: 0.5,
                 animations: { () -> Void in
                     view.image = anImage
             })
@@ -201,15 +201,15 @@ class SBMapViewController: UIViewController, MKMapViewDelegate, CLLocationManage
         
     }
   
-    func mapView(mapView: MKMapView, didDeselectAnnotationView view: MKAnnotationView) {
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         
-        if view.annotation!.isKindOfClass(SBMapViewAnnotation.self)  {
+        if view.annotation!.isKind(of: SBMapViewAnnotation.self)  {
             
-            let anImage : UIImage = UIImage (CGImage: view.image!.CGImage!,
-                scale: view.image!.scale * 1.3,
-                orientation: view.image!.imageOrientation)
+            let anImage : UIImage = UIImage.init(cgImage: view.image!.cgImage!,
+                                         scale: view.image!.scale / 1.3,
+                                         orientation: view.image!.imageOrientation)
 
-            UIView.animateWithDuration(0.5,
+            UIView.animate(withDuration: 0.5,
                 animations: { () -> Void in
                     view.image = anImage
             })
